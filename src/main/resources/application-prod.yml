@@ -1,0 +1,3 @@
+# application-prod.yml - production overrides
+# Add profile-specific properties here (this file intentionally left minimal)
+
