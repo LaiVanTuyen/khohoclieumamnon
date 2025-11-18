@@ -98,14 +98,35 @@ CREATE TABLE IF NOT EXISTS `banners` (
 
 
 -- -----------------------------------------------------
+-- Bảng: resource_status (Trạng thái tài liệu)
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `resource_status` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(50) NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE
+) ENGINE = InnoDB;
+
+-- CHÈN DỮ LIỆU BAN ĐẦU CHO BẢNG `resource_status`
+INSERT INTO `resource_status` (`name`) VALUES ('PENDING')
+    ON DUPLICATE KEY UPDATE name='PENDING';
+
+INSERT INTO `resource_status` (`name`) VALUES ('APPROVED')
+    ON DUPLICATE KEY UPDATE name='APPROVED';
+
+INSERT INTO `resource_status` (`name`) VALUES ('REJECTED')
+    ON DUPLICATE KEY UPDATE name='REJECTED';
+
+
+-- -----------------------------------------------------
 -- Bảng: resources (Tài liệu học tập - Cốt lõi)
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `resources` (
                                            `id` BIGINT NOT NULL AUTO_INCREMENT,
                                            `title` VARCHAR(255) NOT NULL,
     `description` TEXT NULL,
-    `status` ENUM('PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
-    `file_url` VARCHAR(1024) NULL,
+    `status_id` BIGINT NOT NULL,
+    `file_path` VARCHAR(1024) NULL,
     `original_file_name` VARCHAR(255) NULL,
     `file_size` BIGINT NULL,
     `youtube_url` VARCHAR(255) NULL,
@@ -120,11 +141,11 @@ CREATE TABLE IF NOT EXISTS `resources` (
     INDEX `fk_resources_approver_id_idx` (`approver_id` ASC) VISIBLE,
     INDEX `fk_resources_topic_id_idx` (`topic_id` ASC) VISIBLE,
     INDEX `fk_resources_type_id_idx` (`type_id` ASC) VISIBLE,
-    INDEX `idx_resources_status` (`status` ASC) VISIBLE,
+    INDEX `fk_resources_status_id_idx` (`status_id` ASC) VISIBLE,
     CONSTRAINT `fk_resources_uploader_id`
     FOREIGN KEY (`uploader_id`)
     REFERENCES `users` (`id`)
-    ON DELETE RESTRICT -- hoặc ON DELETE SET NULL
+    ON DELETE RESTRICT
     ON UPDATE NO ACTION,
     CONSTRAINT `fk_resources_approver_id`
     FOREIGN KEY (`approver_id`)
@@ -139,6 +160,11 @@ CREATE TABLE IF NOT EXISTS `resources` (
     CONSTRAINT `fk_resources_type_id`
     FOREIGN KEY (`type_id`)
     REFERENCES `resource_types` (`id`)
+    ON DELETE RESTRICT
+    ON UPDATE NO ACTION,
+    CONSTRAINT `fk_resources_status_id`
+    FOREIGN KEY (`status_id`)
+    REFERENCES `resource_status` (`id`)
     ON DELETE RESTRICT
     ON UPDATE NO ACTION)
     ENGINE = InnoDB;

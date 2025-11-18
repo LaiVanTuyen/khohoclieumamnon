@@ -1,0 +1,914 @@
+{
+	"info": {
+		"_postman_id": "khohoclieu-api-collection",
+		"name": "Kho Học Liệu API Collection",
+		"description": "Collection đầy đủ các API endpoints cho hệ thống Kho Học Liệu Mầm Non",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{jwt_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication API",
+			"item": [
+				{
+					"name": "Đăng nhập hệ thống",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set(\"jwt_token\", jsonData.token);",
+									"    pm.environment.set(\"jwt_token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@khohoclieu.com\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Endpoint xác thực email và mật khẩu, trả về JWT token nếu thành công"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Resource API",
+			"item": [
+				{
+					"name": "Tải lên tài liệu mới",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Tài liệu mẫu",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Mô tả tài liệu",
+									"type": "text"
+								},
+								{
+									"key": "topicId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "resourceTypeId",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "youtubeUrl",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/resources",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources"
+							]
+						},
+						"description": "Tải lên file hoặc gửi link YouTube. Yêu cầu quyền ADMIN hoặc TEACHER"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy danh sách tài liệu (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/resources?page=0&size=10&sort=createdAt,desc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources"
+							],
+							"query": [
+								{
+									"key": "topicId",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "keyword",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "sort",
+									"value": "createdAt,desc"
+								}
+							]
+						},
+						"description": "Lấy danh sách tài liệu công khai với phân trang"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy chi tiết tài liệu (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/resources/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lấy thông tin chi tiết của một tài liệu"
+					},
+					"response": []
+				},
+				{
+					"name": "Phê duyệt tài liệu (Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/resources/:id/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources",
+								":id",
+								"approve"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Phê duyệt tài liệu - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật tài liệu",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Tài liệu đã cập nhật\",\n    \"description\": \"Mô tả mới\",\n    \"topicId\": 1,\n    \"resourceTypeId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/resources/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cập nhật thông tin tài liệu - Admin hoặc Chủ sở hữu"
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa tài liệu",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/resources/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"resources",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Xóa tài liệu - Admin hoặc Chủ sở hữu"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Topic API",
+			"item": [
+				{
+					"name": "Lấy tất cả chủ đề (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/topics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topics"
+							]
+						},
+						"description": "Lấy danh sách tất cả chủ đề"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy chi tiết một chủ đề (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/topics/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lấy thông tin chi tiết của một chủ đề"
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo chủ đề mới (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Chủ đề mới\",\n    \"description\": \"Mô tả chủ đề\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/topics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topics"
+							]
+						},
+						"description": "Tạo chủ đề mới - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật chủ đề (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Chủ đề đã cập nhật\",\n    \"description\": \"Mô tả mới\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/topics/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cập nhật chủ đề - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa chủ đề (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/topics/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"topics",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Xóa chủ đề - Chỉ ADMIN"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Resource Type API",
+			"item": [
+				{
+					"name": "Lấy tất cả loại tài liệu (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"types"
+							]
+						},
+						"description": "Lấy danh sách tất cả loại tài liệu"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy chi tiết một loại tài liệu (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lấy thông tin chi tiết của một loại tài liệu"
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo loại tài liệu mới (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Loại tài liệu mới\",\n    \"description\": \"Mô tả loại tài liệu\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/types",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"types"
+							]
+						},
+						"description": "Tạo loại tài liệu mới - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật loại tài liệu (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Loại tài liệu đã cập nhật\",\n    \"description\": \"Mô tả mới\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cập nhật loại tài liệu - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa loại tài liệu (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/types/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Xóa loại tài liệu - Chỉ ADMIN"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Banner API",
+			"item": [
+				{
+					"name": "Lấy danh sách banner đang hoạt động (Public)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/banners/active",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners",
+								"active"
+							]
+						},
+						"description": "Lấy danh sách các banner đang hoạt động"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy TẤT CẢ banner (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/banners",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners"
+							]
+						},
+						"description": "Lấy tất cả banner - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy chi tiết 1 banner (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/banners/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lấy chi tiết một banner - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo banner mới (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Banner mới",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Mô tả banner",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "displayOrder",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/banners",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners"
+							]
+						},
+						"description": "Tạo banner mới - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật banner (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Banner đã cập nhật",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Mô tả mới",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "displayOrder",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/banners/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cập nhật banner - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa banner (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/banners/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"banners",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Xóa banner - Chỉ ADMIN"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. User Management API",
+			"item": [
+				{
+					"name": "Lấy tất cả người dùng (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Lấy danh sách tất cả người dùng - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy chi tiết 1 người dùng (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Lấy thông tin chi tiết của một người dùng - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo người dùng mới (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"fullName\": \"Nguyễn Văn A\",\n    \"role\": \"TEACHER\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Tạo người dùng mới - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Cập nhật người dùng (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"updated@example.com\",\n    \"fullName\": \"Nguyễn Văn B\",\n    \"role\": \"ADMIN\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Cập nhật người dùng - Chỉ ADMIN"
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa người dùng (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Xóa người dùng - Chỉ ADMIN"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
+

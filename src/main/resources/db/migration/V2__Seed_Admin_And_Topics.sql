@@ -13,7 +13,7 @@ SET NAMES 'utf8mb4';
 -- Mật khẩu là: "admin123" (đã được mã hóa bằng BCrypt)
 -- Bạn PHẢI dùng mật khẩu đã mã hóa, vì Spring Security sẽ dùng BCrypt để so sánh
 SET @admin_email = 'admin@khohoclieu.com';
-SET @admin_password_hash = '$2a$10$f/eC.xS6X8.j3xY.C1qJd.eJ9R.0cO0G/K1lB6/foW0E..F1X98e';
+SET @admin_password_hash = '$2a$12$coBfFL29cgtZv1C3fy0AOuT8XKaKwxC.KXrZ7DyFIzG.hEHiC3Uwy';
 
 INSERT INTO `users` (`email`, `password`, `full_name`, `created_at`, `updated_at`)
 VALUES

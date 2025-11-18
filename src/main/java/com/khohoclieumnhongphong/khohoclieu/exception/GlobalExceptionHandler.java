@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired; // <-- Thêm
 import org.springframework.context.MessageSource; // <-- Thêm
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException; // <-- Thêm
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -82,6 +83,26 @@ public class GlobalExceptionHandler {
                 request.getDescription(false)
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Bắt lỗi BadCredentialsException (sai email hoặc password)
+     * Trả về 401 UNAUTHORIZED thay vì 500
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(
+            BadCredentialsException ex, WebRequest request) {
+
+        Locale locale = request.getLocale();
+        String errorMessage = messageSource.getMessage("error.auth.badcredentials", null, locale);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                Instant.now(),
+                errorMessage, // "Email hoặc mật khẩu không chính xác" hoặc "Invalid email or password"
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     /**

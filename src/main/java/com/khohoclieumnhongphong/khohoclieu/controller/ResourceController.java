@@ -76,7 +76,7 @@ public class ResourceController {
 
             // @PageableDefault cho phép thiết lập phân trang mặc định
             // Ví dụ: ?page=0&size=10&sort=createdAt,desc
-            @PageableDefault(size = 10, sort = "createdAt,desc") Pageable pageable)
+            @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable)
     {
         Page<ResourceResponseDTO> resourcePage = resourceService.getPublicResources(topicId, search, pageable);
         return ResponseEntity.ok(resourcePage);

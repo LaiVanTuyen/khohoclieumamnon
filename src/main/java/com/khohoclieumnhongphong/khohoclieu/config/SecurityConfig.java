@@ -68,20 +68,32 @@ public class SecurityConfig {
                 // Phân quyền Endpoint
                 .authorizeHttpRequests(auth -> auth
                         // --- Endpoints công khai (Public) ---
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/resources/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/topics/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/types/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/banners/**").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/resources/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/topics/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/types/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/banners/**").permitAll()
 
-                        // --- Swagger UI ---
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        // --- Swagger / OpenAPI - allow common static paths and prefixed paths ---
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/index.html",
+                                "/webjars/**",
+                                "/api/v1/swagger-ui/**",
+                                "/api/v1/swagger-ui.html",
+                                "/api/v1/swagger-ui/index.html",
+                                "/api/v1/webjars/**",
+                                "/api/v1/v3/api-docs/**"
+                        ).permitAll()
 
                         // --- Endpoints cần quyền (Protected) ---
-                        .requestMatchers(HttpMethod.POST, "/api/resources").hasAnyRole("ADMIN", "TEACHER")
-                        .requestMatchers(HttpMethod.PUT, "/api/resources/**").hasAnyRole("ADMIN", "TEACHER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/resources/**").hasAnyRole("ADMIN", "TEACHER")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/resources").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers(HttpMethod.PUT, "/resources/**").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers(HttpMethod.DELETE, "/resources/**").hasAnyRole("ADMIN", "TEACHER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         // Yêu cầu đăng nhập cho tất cả các request khác
                         .anyRequest().authenticated()

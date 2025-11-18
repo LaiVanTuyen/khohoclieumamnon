@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/banners") // Dùng /api/v1
+@RequestMapping("/banners")
 @RequiredArgsConstructor
 @Tag(name = "5. Banner API", description = "API quản lý Banner trang chủ")
 public class BannerController {

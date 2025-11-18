@@ -35,13 +35,13 @@ public class ResourceServiceImpl implements IResourceService {
     private final IMinioService minioService;
 
     // Trạng thái mặc định khi upload
-    private static final String DEFAULT_STATUS = "PENDING";
+    private static final EResourceStatus DEFAULT_STATUS = EResourceStatus.PENDING;
     // Thư mục lưu trên MinIO
     private static final String MINIO_FOLDER = "resources";
     // Trạng thái công khai
-    private static final String PUBLIC_STATUS = "APPROVED";
+    private static final EResourceStatus PUBLIC_STATUS = EResourceStatus.APPROVED;
     // Trạng thái duyệt
-    private static final String APPROVED_STATUS = "APPROVED";
+    private static final EResourceStatus APPROVED_STATUS = EResourceStatus.APPROVED;
 
     @Override
     @Transactional // Đảm bảo tất cả thành công hoặc rollback (nếu lỗi)

@@ -26,7 +26,7 @@ public class I18nConfig implements WebMvcConfigurer {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         // Cần chỉ đúng đường dẫn tới file, bỏ đi phần đuôi _vi, _en và .properties
         messageSource.setBasename("classpath:i18n/messages");
-        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultEncoding("ISO-8859-1");
         return messageSource;
     }
 
